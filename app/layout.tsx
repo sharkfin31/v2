@@ -6,10 +6,10 @@ import Script from 'next/script'
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
-  title: 'Personal Portfolio',
+  title: 'Shyam Sundar Ravikumar',
   description: 'Personal portfolio website showcasing projects, blog, experience, and education.',
   icons: {
-    icon: '/logo.png',
+    icon: process.env.NODE_ENV === "production" ? "/v2/logo.png" : "/logo.png",
   },
 }
 
