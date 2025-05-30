@@ -41,7 +41,7 @@ const MobileMenu = ({ activeSection, onSectionChange, isOpen, onClose }: MobileM
           <p className="text-foreground">I build and fix stuff</p>
         </div>
         
-        <nav className="mt-28 flex flex-col items-center">
+        <nav className="mt-36 flex flex-col items-center">
           <ul className="space-y-6 justify-center text-center">
             {navItems.map((item) => (
               <li key={item.id}>

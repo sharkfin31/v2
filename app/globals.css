@@ -241,7 +241,7 @@ body {
   }
   
   .section {
-    padding-top: 0rem;
+    padding-top: 2rem;
     padding-left: 1.5rem;
     padding-right: 1.5rem;
   }
@@ -252,6 +252,11 @@ body {
   
   .card {
     @apply p-3;
+  }
+  
+  /* Reduce font size for all content on mobile */
+  html {
+    font-size: 90%;
   }
 }
 
