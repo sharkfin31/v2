@@ -2,9 +2,9 @@
 
 import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
+import { FaBars } from 'react-icons/fa';
 import Sidebar from './components/Sidebar';
 import MobileMenu from './components/MobileMenu';
-import MobileNavbar from './components/MobileNavbar';
 import Projects from './components/Projects';
 import Blog from './components/Blog';
 import Experience from './components/Experience';
@@ -76,8 +76,14 @@ export default function Home() {
       {/* Theme Toggle */}
       <ThemeToggle />
 
-      {/* Mobile Navbar */}
-      <MobileNavbar toggleMenu={toggleMenu} />
+      {/* Hamburger Menu Button */}
+      <button 
+        onClick={toggleMenu}
+        className="fixed top-6 right-6 p-2 text-foreground z-30 lg:hidden"
+        aria-label="Toggle menu"
+      >
+        <FaBars size={20} />
+      </button>
       
       {/* Mobile Menu */}
       <MobileMenu 
@@ -95,7 +101,7 @@ export default function Home() {
         id="content-container"
         className="flex-1 overflow-y-auto content-scrollbar ml-0 lg:ml-[var(--sidebar-width)] scroll-smooth snap-y snap-mandatory"
       >
-        <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 pt-16 lg:pt-0">
+        <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 pt-0">
           <section id="projects" className="section">
             <Projects />
           </section>
