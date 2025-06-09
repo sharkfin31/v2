@@ -9,7 +9,7 @@ export const metadata: Metadata = {
   title: 'Shyam Sundar Ravikumar',
   description: 'Personal portfolio website showcasing projects, blog, experience, and education.',
   icons: {
-    icon: process.env.NODE_ENV === "production" ? "/v2/logo.png" : "/logo.png",
+    icon: "/logo.png",
   },
 }
 
