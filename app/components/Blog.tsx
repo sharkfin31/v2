@@ -5,33 +5,7 @@ import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import ExpandTransition from "./ExpandTransition";
 import { FaPenFancy } from "react-icons/fa6";
-
-const blogData = [
-  {
-    id: 1,
-    title: 'Think Small',
-    excerpt: 'There’s a subtle irony in software engineering: we often Dream Big but fail to Ship Small. We architect for scale before we even have users.',
-    date: 'May 11, 2025',
-    readTime: '3 min read',
-    link: 'https://medium.com/@shyamsravikumar/think-small-5a85a5f2011f',
-  },
-  {
-    id: 2,
-    title: '5 Lessons I Learned (That I Wish I Knew Sooner)',
-    excerpt: 'When I first started my career as a software engineer, I believed that the most challenging aspects would be mastering new programming languages, debugging complex issues, and getting past technical interviews.',
-    date: 'May 2, 2025',
-    readTime: '4 min read',
-    link: 'https://medium.com/@shyamsravikumar/5-lessons-i-learned-that-i-wish-i-knew-sooner-7736e17fb008',
-  },
-  {
-    id: 3,
-    title: 'State Management in React',
-    excerpt: 'Comparing different state management solutions in React applications.',
-    date: 'April 10, 2023',
-    readTime: '7 min read',
-    link: '/blog/state-management-react',
-  },
-];
+import { supabase, BlogPost } from "@/lib/supabase";
 
 const container = {
   hidden: { opacity: 0 },
@@ -57,7 +31,31 @@ const item = {
 const Blog = () => {
   const [isExpanding, setIsExpanding] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
+  const [blogData, setBlogData] = useState<BlogPost[]>([]);
+  const [loading, setLoading] = useState(true);
   const router = useRouter();
+
+  useEffect(() => {
+    const fetchBlogPosts = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('blog')
+          .select('*')
+          .order('id', { ascending: false });
+          
+        if (error) throw error;
+        if (data && data.length > 0) {
+          setBlogData(data);
+        }
+      } catch (error) {
+        console.error("Error fetching blog posts:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchBlogPosts();
+  }, []);
 
   useEffect(() => {
     const checkMobile = () => {
@@ -78,6 +76,10 @@ const Blog = () => {
     setIsExpanding(true);
   };
 
+  const formatReadTime = (minutes: number) => {
+    return `${minutes} min read`;
+  };
+
   return (
     <motion.div
       initial={{ opacity: 0 }}
@@ -86,51 +88,61 @@ const Blog = () => {
     >
       <h2 className="text-xl text-heading mb-8 flex items-center gap-2"><FaPenFancy /> Blog</h2>
       
-      <motion.div 
-        variants={container}
-        initial="hidden"
-        animate="show"
-        className="space-y-6"
-      >
-        {blogData.map((post) => (
-          <motion.div 
-            key={post.id} 
-            variants={item}
-            className="card show-arrow group cursor-pointer"
-            onClick={() => handleCardClick(post.link)}
-          >
-            <h3 className="text-lg font-medium text-heading mb-2 hover:text-accent transition-colors">
-              {post.title}
-            </h3>
+      {loading ? (
+        <div className="flex justify-center py-8">
+          <div className="animate-pulse">Loading blog posts...</div>
+        </div>
+      ) : blogData.length > 0 ? (
+        <motion.div 
+          variants={container}
+          initial="hidden"
+          animate="show"
+          className="space-y-6"
+        >
+          {blogData.slice(0, 3).map((post) => (
+            <motion.div 
+              key={post.id} 
+              variants={item}
+              className="card show-arrow group cursor-pointer"
+              onClick={() => handleCardClick(post.link)}
+            >
+              <h3 className="text-lg font-medium text-heading mb-2 hover:text-accent transition-colors">
+                {post.title}
+              </h3>
 
-            <p className="text-sm text-foreground mb-4 max-w-[93%]">
-              {post.excerpt.slice(0, isMobile ? 60 : 120)}{post.excerpt.length > (isMobile ? 60 : 120) && '...'}
-            </p>
-            <div className="flex items-center text-xs text-foreground">
-              <span>{post.date}</span>
-              <span className="mx-2">•</span>
-              <span>{post.readTime}</span>
-            </div>
-            
-          </motion.div>
-        ))}
-      </motion.div>
+              <p className="text-sm text-foreground mb-4 max-w-[93%]">
+                {post.excerpt.slice(0, isMobile ? 60 : 120)}{post.excerpt.length > (isMobile ? 60 : 120) && '...'}
+              </p>
+              <div className="flex items-center text-xs text-foreground">
+                <span>{post.date}</span>
+                <span className="mx-2">•</span>
+                <span>{formatReadTime(post.readTime)}</span>
+              </div>
+              
+            </motion.div>
+          ))}
+        </motion.div>
+      ) : (
+        <div className="text-center py-8">No blog posts found</div>
+      )}
       
-      <div className="mt-8 text-center">
-        <button
-          onClick={handleViewMore}
-          className="view-more-btn"
-        >
-          View more
-        </button>
+      {blogData.length > 0 && (
+        <div className="mt-8 text-center">
+          <button
+            onClick={handleViewMore}
+            className="view-more-btn"
+          >
+            View more
+          </button>
 
-        <ExpandTransition
-          isExpanding={isExpanding}
-          onAnimationComplete={() => router.push("/blog")}
-        >
-          <div />
-        </ExpandTransition>
-      </div>
+          <ExpandTransition
+            isExpanding={isExpanding}
+            onAnimationComplete={() => router.push("/blog")}
+          >
+            <div />
+          </ExpandTransition>
+        </div>
+      )}
     </motion.div>
   );
 };
